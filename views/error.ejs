@@ -1,0 +1,30 @@
+<html>
+  <head>
+    <title>Error Page</title>
+    <link
+      rel="stylesheet"
+      href="/static/css/error.css"
+      <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css"
+    />
+  </head>
+  <body>
+    <div class="error-404">
+      <div class="error-code m-b-10 m-t-20"><%= status %> <i class="fa fa-warning"></i></div>
+      <h2 class="font-bold">Oops <%= status %>! That page can’t be found.</h2>
+
+      <div class="error-desc">
+        <%=message%> <br />
+        Try refreshing the page or click the button below to go back to the Homepage.
+        <div>
+          <br />
+          <a href="/" class="btn btn-primary"
+            ><span class="glyphicon glyphicon-home"></span> Go back to Homepage</a
+          >
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
