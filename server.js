@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 // Starting the server
 app.listen(port, () => {
-  console.log(path.join(__dirname, "./routes"));
+  //console.log(path.join(__dirname, "./routes"));
   console.log(`Listening the port ${port}....`);
 });
 
@@ -58,7 +58,7 @@ app.get("/", async (request, response) => {
   });
 });
 
-app.get("/dashboard", async (request, response) => {
+app.get("/dashboard/", async (request, response) => {
   console.log("inside dashboard endpoint");
   const fatal_response = await fetch(fatalities_url, { mode: "no-cors" });
   const fatal_data = await fatal_response.json();
@@ -82,7 +82,83 @@ app.get("/dashboard", async (request, response) => {
   response.json(data);
 });
 
+app.get("/dashboard/:year/:district/:county", async (request, response) => {
+  // console.log("Quering with year, district, county--->>>");
+  let yr = request.params.year;
+  let dist = request.params.district;
+  let county = request.params.county;
+
+  let fatalities_update = fatalities_url;
+  let traffic_update = trafficFatal_url;
+  let injAvg_update = InjuredAverage_url;
+  let fatalAvg_update = fatalAverage_url;
+
+  // Creating API endpoints URL
+  if (yr !== "null") {
+    fatalities_update = fatalities_update + "?year=" + yr;
+    traffic_update = traffic_update + "?year=" + yr;
+    injAvg_update = injAvg_update + "?year=" + yr;
+    fatalAvg_update = fatalAvg_update + "?year=" + yr;
+
+    if (dist !== "null") {
+      fatalities_update = fatalities_update + "&district=" + dist;
+      traffic_update = traffic_update + "&district=" + dist;
+      injAvg_update = injAvg_update + "&district=" + dist;
+      fatalAvg_update = fatalAvg_update + "&district=" + dist;
+    }
+    if (county !== "null") {
+      fatalities_update = fatalities_update + "&county=" + county;
+      traffic_update = traffic_update + "&county=" + county;
+      injAvg_update = injAvg_update + "&county=" + county;
+      fatalAvg_update = fatalAvg_update + "&county=" + county;
+    }
+  } else if (dist !== "null") {
+    fatalities_update = fatalities_update + "?district=" + dist;
+    traffic_update = traffic_update + "?district=" + dist;
+    injAvg_update = injAvg_update + "?district=" + dist;
+    fatalAvg_update = fatalAvg_update + "?district=" + dist;
+    if (county !== "null") {
+      fatalities_update = fatalities_update + "&county=" + county;
+      traffic_update = traffic_update + "&county=" + county;
+      injAvg_update = injAvg_update + "&county=" + county;
+      fatalAvg_update = fatalAvg_update + "&county=" + county;
+    }
+  } else if (county !== "null") {
+    fatalities_update = fatalities_update + "?county=" + county;
+    traffic_update = traffic_update + "?county=" + county;
+    injAvg_update = injAvg_update + "?county=" + county;
+    fatalAvg_update = fatalAvg_update + "?county=" + county;
+  }
+
+  // console.log("fatalities URL: " + fatalities_update);
+  // console.log("traffic_update URL: " + traffic_update);
+  // console.log("injAvg_update URL: " + injAvg_update);
+  // console.log("fatalAvg_update URL: " + fatalAvg_update);
+
+  const fatal_response = await fetch(fatalities_update, { mode: "no-cors" });
+  const fatal_data = await fatal_response.json();
+
+  const traffic_response = await fetch(traffic_update, { mode: "no-cors" });
+  const trafficFatal_data = await traffic_response.json();
+
+  const injAvg_response = await fetch(injAvg_update, { mode: "no-cors" });
+  const injuredAvg_data = await injAvg_response.json();
+
+  const fatalAvg_response = await fetch(fatalAvg_update, { mode: "no-cors" });
+  const fatalAvg_data = await fatalAvg_response.json();
+
+  data = {
+    fatal: fatal_data,
+    traffic: trafficFatal_data,
+    injuredAvg: injuredAvg_data,
+    fatalAvg: fatalAvg_data,
+  };
+
+  response.json(data);
+});
+
 app.use((request, response, next) => {
+  console.log("<--------------- inside error ------------->");
   console.error();
 
   return next(createError(404, "File Not Found!!!!!"));

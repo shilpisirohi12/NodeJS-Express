@@ -146,12 +146,37 @@ dist_to_county = {
   7: ["Citrus", "Hernando", "Hillsborough", "Pasco", "Pinellas"],
 };
 
-dashboard_data = [];
 getData();
 async function getData() {
   const response = await fetch("/dashboard");
   const data = await response.json();
-  console.log(data);
+  //console.log(data);
+  drawVisualization(data);
+}
+
+async function updateData(filter) {
+  //resetting the variables
+  yearValue = null;
+  districtValue = null;
+  countyValue = null;
+  // console.log(
+  //   "filter[year]" + typeof filter["year"] + "  " + filter["year"][0]
+  // );
+
+  if (filter["year"] && filter["year"][0] > 0) {
+    yearValue = filter["year"];
+  }
+  if (filter["district"] && filter["district"] > 0) {
+    districtValue = filter["district"];
+  }
+  if (filter["county"] && filter["county"] > 0) {
+    countyValue = filter["county"];
+  }
+
+  uri_api = `dashboard/${yearValue}/${districtValue}/${countyValue}`;
+  const response = await fetch(uri_api);
+  const data = await response.json();
+  //console.log(data);
   drawVisualization(data);
 }
 
@@ -189,7 +214,7 @@ function updateCounty() {
   var e = document.getElementById("district");
   var result = e.options[e.selectedIndex].value;
   countyArray = dist_to_county[result];
-  console.log(countyArray);
+  //console.log(countyArray);
 
   var countyDropdown = document.getElementById("county");
 
@@ -203,18 +228,27 @@ function updateCounty() {
   }
 }
 
-//--------submit button------------------
+//-------------------------------------------------------
+//--------Submit Button----------------------------------
+//-------------------------------------------------------
 function submitButton() {
-  yearSelected = document.getElementById("year");
+  yearSelected = $("#year").val();
   districtSelected = document.getElementById("district");
   countySelected = document.getElementById("county");
-  console.log("year selected--->" + $("#year").val());
-  console.log(
-    "selected values--->" +
-      districtSelected.options[districtSelected.selectedIndex].value +
-      "  " +
-      countySelected.options[countySelected.selectedIndex].text
-  );
+  county = countySelected.options[countySelected.selectedIndex].text;
+  if (county.includes("County")) {
+    countyVal = "";
+  } else {
+    countyVal = countyName.indexOf(county) + 1;
+  }
+  filter = {
+    year: yearSelected,
+    district: districtSelected.options[districtSelected.selectedIndex].value,
+    county: countyVal.toString(),
+  };
+
+  //console.log("filter:", filter);
+  updateData(filter);
 }
 
 //-------------------------------------------------------
@@ -224,7 +258,21 @@ google.load("visualization", "1", { packages: ["corechart"] });
 //google.setOnLoadCallback(drawVisualization);
 
 function drawVisualization(data) {
-  // Some raw data (not necessarily accurate)
+  let months = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
+  ];
+
   let graph1_fatalities = [["Year", "MC Fatalities", "Fatalities"]];
   for (i = 0; i < data["fatal"].length; i++) {
     graph1_fatalities.push([
@@ -253,9 +301,12 @@ function drawVisualization(data) {
   let graph3_injuredByMonth = [
     ["Month", "MC Operators Injured", "MC Passengers Injured"],
   ];
+
   for (i = 0; i < data["injuredAvg"].length; i++) {
+    let month_index = data["injuredAvg"][i]["month"] - 1;
+    //console.log("months" + months[month_index] + " " + month_index);
     graph3_injuredByMonth.push([
-      data["injuredAvg"][i]["month"],
+      months[month_index],
       data["injuredAvg"][i]["fatal_mcOperator"],
       data["injuredAvg"][i]["fatal_mcPassenger"],
     ]);
@@ -265,8 +316,9 @@ function drawVisualization(data) {
     ["Month", "MC Operators Killed", "MC Passengers killed"],
   ];
   for (i = 0; i < data["fatalAvg"].length; i++) {
+    let month_index = data["fatalAvg"][i]["month"] - 1;
     graph4_fatalAvg.push([
-      data["fatalAvg"][i]["month"],
+      months[month_index],
       data["fatalAvg"][i]["fatal_mcOperator"],
       data["fatalAvg"][i]["fatal_mcPassenger"],
     ]);
@@ -282,6 +334,7 @@ function drawVisualization(data) {
 
   var optionsFatalities = {
     title: "Motorcycle Fatalities in Florida (2011 to 2019)",
+    chartArea: { width: "70%" },
     vAxes: {
       0: {
         title: "Motorcycle Fatalities",
@@ -297,11 +350,11 @@ function drawVisualization(data) {
     hAxis: {
       title: "",
       titleTextStyle: { bold: 1, italic: 0 },
+      textStyle: { color: "#848484", bold: false, fontSize: 12 },
       format: "",
-      minValue: 2000,
-      maxValue: 2018,
+      minValue: 2011,
+      maxValue: 2019,
       ticks: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019],
-      textStyle: { fontSize: 9 },
       slantedText: false,
       slantedTextAngle: 90,
     },
@@ -319,13 +372,13 @@ function drawVisualization(data) {
       0: { color: "red" },
     },
     legend: { position: "bottom" },
-    backgroundColor: "#A2A2A2",
+    backgroundColor: "#FFFFFF",
   };
 
   var optionsProportions = {
-    // chartArea:{width:'85%'},
     title:
       "Proportion of Motorcycle (MC) Crashes and Fatalities in Florida (2011-2019)",
+    chartArea: { width: "85%" },
     vAxis: {
       title: "Values in Percentage(%)",
       titleTextStyle: { bold: 1, italic: 0 },
@@ -334,10 +387,10 @@ function drawVisualization(data) {
       title: "",
       titleTextStyle: { bold: 1, italic: 0 },
       format: "",
-      minValue: 2000,
-      maxValue: 2018,
+      minValue: 2011,
+      maxValue: 2019,
       ticks: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019],
-      textStyle: { fontSize: 9 },
+      textStyle: { color: "#848484", bold: false, fontSize: 12 },
       slantedText: false,
       slantedTextAngle: 90,
     },
@@ -347,96 +400,84 @@ function drawVisualization(data) {
       1: { pointShape: "circle", pointSize: 8, lineWidth: 2 },
     },
     legend: { position: "bottom" },
-    backgroundColor: "#A2A2A2",
+    backgroundColor: "#FFFFFF",
   };
 
   var optionsinjuredByMonth = {
-    //chartArea:{width:'85%'},
     title: "Seriously Injured Motorcyclists by Month (2016-2018 Average)",
+    chartArea: { width: "90%" },
     vAxis: { title: "", titleTextStyle: { bold: 1, italic: 0 } },
     hAxis: {
       title: "",
       titleTextStyle: { bold: 1, italic: 0 },
-      format: "",
-      minValue: 2000,
-      maxValue: 2018,
+      textStyle: { color: "#848484", bold: false, fontSize: 12 },
       ticks: [
-        2001,
-        2002,
-        2003,
-        2004,
-        2005,
-        2006,
-        2007,
-        2008,
-        2009,
-        2010,
-        2011,
-        2012,
-        2013,
-        2014,
-        2015,
-        2016,
-        2017,
-        2018,
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ],
-      textStyle: { fontSize: 9 },
-      slantedText: false,
-      slantedTextAngle: 90,
     },
     seriesType: "bars",
     isStacked: true,
     legend: { position: "bottom" },
-    backgroundColor: "#A2A2A2",
+    backgroundColor: "#ffffff",
   };
 
   var optionsfatalByMonth = {
-    //chartArea:{width:'85%'},
+    chartArea: { width: "85%" },
     title: "Motorcycle(MC) Fatalities by Month (2016-2018 Average)",
     vAxis: { title: "", titleTextStyle: { bold: 1, italic: 0 } },
     hAxis: {
       title: "",
       titleTextStyle: { bold: 1, italic: 0 },
-      format: "",
-      minValue: 2000,
-      maxValue: 2018,
       ticks: [
-        2001,
-        2002,
-        2003,
-        2004,
-        2005,
-        2006,
-        2007,
-        2008,
-        2009,
-        2010,
-        2011,
-        2012,
-        2013,
-        2014,
-        2015,
-        2016,
-        2017,
-        2018,
+        "Jan",
+        "Feb",
+        "Mar",
+        "Apr",
+        "May",
+        "Jun",
+        "Jul",
+        "Aug",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Dec",
       ],
-      textStyle: { fontSize: 9 },
+      textStyle: { color: "#848484", bold: false, fontSize: 12 },
       slantedText: false,
       slantedTextAngle: 90,
     },
     seriesType: "bars",
     isStacked: true,
     legend: { position: "bottom" },
-    backgroundColor: "#A2A2A2",
+    backgroundColor: "#FFFFFF",
   };
-  // console.log("Dataviz graph1_fatalities: ", graph1_fatalities);
-  // console.log("Dataviz graph2_proportions: ", graph2_proportions);
-  // console.log("Dataviz graph3_injuredByMonth: ", graph3_injuredByMonth);
-  // console.log("Dataviz graph4_fatalAvg: ", graph4_fatalAvg);
+  // var exportGraphs = document.getElementById("graphs-content");
 
   var chartFatalities = new google.visualization.ComboChart(
     document.getElementById("Fatalities")
   );
+
+  // google.visualization.events.addListener(
+  //   chartFatalities,
+  //   "ready",
+  //   function () {
+  //     // fatalities_img = '<img src="' + chartFatalities.getImageURI() + '">';
+  //     // exportGraphs.append(fatalities_img);
+  //     exportGraphs.innerHTML =
+  //       '<img src="' + chartFatalities.getImageURI() + '">';
+  //   }
+  // );
   chartFatalities.draw(dataFatalities, optionsFatalities);
 
   var chartProportions = new google.visualization.ComboChart(
