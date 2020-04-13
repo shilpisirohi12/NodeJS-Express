@@ -1,0 +1,176 @@
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
+/* @media (max-width: 768px) {
+  #sidebar {
+    margin-left: -250px;
+  }
+  #sidebar.active {
+    margin-left: 0;
+  }
+} */
+
+#top {
+  background-color: #c0c0c0;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  z-index: 100;
+  margin-bottom: 1rem;
+  display: inline;
+  text-align: left;
+}
+
+/* .menu-items {
+  margin: 0.1rem;
+  background-color: whitesmoke;
+  padding-left: 0.3rem;
+  padding-right: 0.3rem;
+  padding-top: 0.1rem;
+  padding-bottom: 0.1rem;
+  border-radius: 0.6rem;
+} */
+
+.menu-items a:link,
+.menu-items a:visited {
+  background-color: white;
+  color: black;
+  padding: 0.1em 0.6em;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 1.3em;
+  font-weight: 400;
+  border-radius: 0.9em;
+  margin: 0rem 0.3rem;
+}
+
+.menu-items a:hover,
+.menu-items a:active {
+  background-color: whitesmoke;
+}
+
+.first-item {
+  margin-left: 20%;
+}
+.contact {
+  float: right;
+  margin-top: 0.4rem;
+  margin-right: 0.2rem;
+}
+
+select {
+  display: block;
+  font-family: inherit;
+  font-size: 100%;
+  margin: 0;
+  box-sizing: border-box;
+  width: 80%;
+  padding-bottom: 2px;
+  height: 40px;
+  text-align: center;
+}
+select#year {
+  height: 80px;
+}
+
+button,
+input,
+label {
+  display: block;
+  font-family: inherit;
+  font-size: 100%;
+  font-weight: bold;
+  margin-top: 0.5rem;
+  box-sizing: border-box;
+  width: 80%;
+  padding-top: 6px;
+  padding-bottom: 0px;
+  height: 40px;
+}
+
+div#graph-section {
+  padding-top: 4.6rem;
+}
+body {
+  font-family: "Poppins", sans-serif;
+  background: #fafafa;
+}
+/* Header */
+.img-fluid {
+  width: 0.5rem;
+  height: 0.5rem;
+}
+
+/* Filters */
+div#filter {
+  margin-top: 5rem;
+}
+
+.label_filter {
+  font-size: 0.7rem;
+}
+
+.filterForm {
+  list-style: none;
+  padding-inline-start: 1rem;
+}
+
+/* Footer */
+.align-center {
+  color: rgb(2, 2, 29);
+  font-size: 1rem;
+}
+
+.container {
+  text-align: center;
+}
+
+/* maps */
+
+#map,
+#mapForInjuries {
+  width: 800px;
+  height: 350px;
+  z-index: 99;
+}
+.info {
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.info h4 {
+  margin: 0 0 5px;
+  color: #777;
+}
+
+.info_map {
+  padding: 4px 6px;
+  font: 8px/10px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+}
+
+.info_map h4 {
+  margin: 0 0 2px;
+  color: #777;
+  font-size: 1rem;
+}
+
+.legend {
+  text-align: left;
+  line-height: 20px;
+  color: #555;
+}
+.legend i {
+  width: 20px;
+  height: 18px;
+  float: left;
+  margin-right: 8px;
+  opacity: 0.7;
+}

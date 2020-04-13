@@ -21,24 +21,31 @@
     <title><%=title%></title>
   </head>
   <body onload="initialLoad()">
-    <header>
-
-      <div class="jumbotron text-center my-2 p-1 bg-dark text-white clearfix d-flex">
-        <img
+    <!-- <body> -->
+    <header id="top">
+      <div class=" my-2 p-1 bg-dark text-white clearfix ">
+        <!-- <img
           src="/image/CUTR-Circle.jpg"
           class="d-inline-block"
           alt="Logo"
           style="width: 1.5rem; height: 1.5rem; float: left;"
-        />
-        <h3 class="heading d-inline-block ml-auto">
+        /> -->
+        <h3 class="heading d-inline-block">
           Motorcycle Analysis Dashboard
         </h3>
-        <a href="" class="d-inline-block pull-right ml-auto">CONTACT US</a>
+
+        <span class="menu-items first-item"><a href="#graph-section">HOME</a></span>
+        <span class="menu-items"><a href="#graph-section">GRAPHS</a></span>
+        <span class="menu-items"><a href="#maps-header">MAPS</a></span>
+
+        <a class="contact" href="" class="d-inline-block">CONTACT US</a>
+
       </div>
     </header>
-  <div class="container-fluid">
+
+  <div id="body" class="container-fluid">
   <div class="row">
-    <div class="col-md-2 border p-1 bg-dark text-light" data-spy="affix">
+    <div id="filter" class="col-md-2 border p-1 bg-dark text-light" data-spy="affix">
      
           <h3 class="heading p-3 text-center ">FILTERS</h3>
    
@@ -78,12 +85,10 @@
     </div>
     
 
-    <div class="col-md-10 p-4">
-      <!-- <div class="row p-3 text-center"> 
-
-        <div id="editor"></div>
-          <button id="cmd" onclick="exportToPdf()">Export to PDF</button>
-      </div> -->
+    <div id="graph-section" class="col-md-10">
+      <div id="graph-header" class="row text-center my-2 p-3 bg-dark text-white">
+        INTERACTIVE GRAPHS
+      </div>
       <div id="content" class="row pl-3 pl-3 pt-2 pr-3">
         <div id="Fatalities" class="col-sm-6 p-2 border"></div>
         <div id="proportions" class="col-sm-6 p-2 border"></div> 
@@ -93,11 +98,19 @@
         <div id="injuredByMonth" class="col-sm-6 p-2 border"></div>
         <div id="fatalByMonth" class="col-sm-6 p-2 border"></div>
       </div>
-      <div class="row pl-3 pl-3 pt-2 pr-3">
+      <div id="maps-header" class="row text-center my-2 p-3 bg-dark text-white">
+        INTERACTIVE MAPS
+      </div>
+      <div id="maps" class="row pl-3 pl-3 pt-2 pr-3">
         <div id='map' class="col p-2 border"></div>
         <!-- <div id="graphs-content"></div>
         <div id="editor"></div> -->
       </div>
+      <div id="maps" class="row pl-3 pl-3 pt-2 pr-3">
+        <div id='mapForInjuries' class="col-sm-6 p-2 border"></div>
+        <div id='mapForFatalities' class="col-sm-6 p-2 border"></div>
+      </div>
+
     </div>
     </div>
   </div>
@@ -109,7 +122,9 @@
     </footer>
 
     <script src="./js/main.js"></script>
-    <script src="./js/maps.js"></script>
+    <script src="./js/cloroplethMaps.js"></script>
+    <script src="./js/fatalities_map.js"></script>
+    <script src="./js/injury_map.js"></script>
     <!-- <script src="./js/pdfGenerator.js"></script> -->
   </body>
 </html>
