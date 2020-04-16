@@ -34,11 +34,11 @@
           Motorcycle Analysis Dashboard
         </h3>
 
-        <span class="menu-items first-item"><a href="#graph-section">HOME</a></span>
+        <span class="menu-items first-item"><a href="#">HOME</a></span>
         <span class="menu-items"><a href="#graph-section">GRAPHS</a></span>
         <span class="menu-items"><a href="#maps-header">MAPS</a></span>
 
-        <a class="contact" href="" class="d-inline-block">CONTACT US</a>
+        <a class="contact" target="_blank" href="https://www.cutr.usf.edu/contact" class="d-inline-block">CONTACT US</a>
 
       </div>
     </header>
@@ -91,7 +91,7 @@
       </div>
       <div id="content" class="row pl-3 pl-3 pt-2 pr-3">
         <div id="Fatalities" class="col-sm-6 p-2 border"></div>
-        <div id="proportions" class="col-sm-6 p-2 border"></div> 
+        <div id="weekly" class="col-sm-6 p-2 border"></div> 
       </div>
 
       <div id="content" class="row pl-3 pl-3 pt-2 pr-3">
@@ -121,10 +121,14 @@
       </div>
     </footer>
 
+    <!-- <script type="module"> 
+    import {initialLoad} from "./js/main.js"
+    window.initialLoad=initialLoad
+    </script> -->
     <script src="./js/main.js"></script>
     <script src="./js/cloroplethMaps.js"></script>
-    <script src="./js/fatalities_map.js"></script>
-    <script src="./js/injury_map.js"></script>
+    <!-- <script src="./js/fatalities_map.js"></script> -->
+    <!-- <script src="./js/injury_map.js"></script> -->
     <!-- <script src="./js/pdfGenerator.js"></script> -->
   </body>
 </html>

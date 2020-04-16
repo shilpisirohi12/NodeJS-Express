@@ -52,6 +52,21 @@ fatalAverage_url = new URL(
   "http://127.0.0.1:5000"
 );
 
+weeklyData_url = new URL(
+  "/api/v1/resources/getByDayOfWeek",
+  "http://127.0.0.1:5000"
+);
+
+mapInjuries_url = new URL(
+  "/api/v1/resources/getmcInjuryByCounty",
+  "http://127.0.0.1:5000"
+);
+
+mapFatalities_url = new URL(
+  "/api/v1/resources/getmcFatalityByCounty",
+  "http://127.0.0.1:5000"
+);
+
 app.get("/", async (request, response) => {
   response.render("pages/index", {
     title: "Motorcycle Accident Data Dashbaord",
@@ -72,11 +87,25 @@ app.get("/dashboard/", async (request, response) => {
   const fatalAvg_response = await fetch(fatalAverage_url, { mode: "no-cors" });
   const fatalAvg_data = await fatalAvg_response.json();
 
+  const weeklyData_response = await fetch(weeklyData_url, { mode: "no-cors" });
+  const weeklyData_data = await weeklyData_response.json();
+
+  const mapInjury_response = await fetch(mapInjuries_url, { mode: "no-cors" });
+  const mapInjury_data = await mapInjury_response.json();
+
+  const mapFatalities_response = await fetch(mapFatalities_url, {
+    mode: "no-cors",
+  });
+  const mapFatalities_data = await mapFatalities_response.json();
+
   data = {
     fatal: fatal_data,
     traffic: trafficFatal_data,
     injuredAvg: injuredAvg_data,
     fatalAvg: fatalAvg_data,
+    weeklydata: weeklyData_data,
+    mapInjuries: mapInjury_data,
+    mapFatalities: mapFatalities_data,
   };
 
   response.json(data);
@@ -92,6 +121,9 @@ app.get("/dashboard/:year/:district/:county", async (request, response) => {
   let traffic_update = trafficFatal_url;
   let injAvg_update = InjuredAverage_url;
   let fatalAvg_update = fatalAverage_url;
+  let week_update = weeklyData_url;
+  let mapInjuries_update = mapInjuries_url;
+  let mapFatalities_update = mapFatalities_url;
 
   // Creating API endpoints URL
   if (yr !== "null") {
@@ -99,35 +131,53 @@ app.get("/dashboard/:year/:district/:county", async (request, response) => {
     traffic_update = traffic_update + "?year=" + yr;
     injAvg_update = injAvg_update + "?year=" + yr;
     fatalAvg_update = fatalAvg_update + "?year=" + yr;
+    week_update = week_update + "?year=" + yr;
+    mapInjuries_update = mapInjuries_update + "?year=" + yr;
+    mapFatalities_update = mapFatalities_update + "?year=" + yr;
 
     if (dist !== "null") {
       fatalities_update = fatalities_update + "&district=" + dist;
       traffic_update = traffic_update + "&district=" + dist;
       injAvg_update = injAvg_update + "&district=" + dist;
       fatalAvg_update = fatalAvg_update + "&district=" + dist;
+      week_update = week_update + "&district=" + dist;
+      mapInjuries_update = mapInjuries_update + "&district=" + dist;
+      mapFatalities_update = mapFatalities_update + "&district=" + dist;
     }
     if (county !== "null") {
       fatalities_update = fatalities_update + "&county=" + county;
       traffic_update = traffic_update + "&county=" + county;
       injAvg_update = injAvg_update + "&county=" + county;
       fatalAvg_update = fatalAvg_update + "&county=" + county;
+      week_update = week_update + "&county=" + county;
+      mapInjuries_update = mapInjuries_update + "&county=" + county;
+      mapFatalities_update = mapFatalities_update + "&county=" + county;
     }
   } else if (dist !== "null") {
     fatalities_update = fatalities_update + "?district=" + dist;
     traffic_update = traffic_update + "?district=" + dist;
     injAvg_update = injAvg_update + "?district=" + dist;
     fatalAvg_update = fatalAvg_update + "?district=" + dist;
+    week_update = week_update + "?district=" + dist;
+    mapInjuries_update = mapInjuries_update + "?district=" + dist;
+    mapFatalities_update = mapFatalities_update + "?district=" + dist;
     if (county !== "null") {
       fatalities_update = fatalities_update + "&county=" + county;
       traffic_update = traffic_update + "&county=" + county;
       injAvg_update = injAvg_update + "&county=" + county;
       fatalAvg_update = fatalAvg_update + "&county=" + county;
+      week_update = week_update + "&county=" + county;
+      mapInjuries_update = mapInjuries_update + "&county=" + county;
+      mapFatalities_update = mapFatalities_update + "&county=" + county;
     }
   } else if (county !== "null") {
     fatalities_update = fatalities_update + "?county=" + county;
     traffic_update = traffic_update + "?county=" + county;
     injAvg_update = injAvg_update + "?county=" + county;
     fatalAvg_update = fatalAvg_update + "?county=" + county;
+    week_update = week_update + "?county=" + county;
+    mapInjuries_update = mapInjuries_update + "&county=" + county;
+    mapFatalities_update = mapFatalities_update + "&county=" + county;
   }
 
   // console.log("fatalities URL: " + fatalities_update);
@@ -147,13 +197,32 @@ app.get("/dashboard/:year/:district/:county", async (request, response) => {
   const fatalAvg_response = await fetch(fatalAvg_update, { mode: "no-cors" });
   const fatalAvg_data = await fatalAvg_response.json();
 
+  const weeklyData_response = await fetch(week_update, { mode: "no-cors" });
+  const weeklyData_data = await weeklyData_response.json();
+
+  const mapInjury_response = await fetch(mapInjuries_url, { mode: "no-cors" });
+  const mapInjury_data = await mapInjury_response.json();
+
+  const mapFatalities_response = await fetch(mapFatalities_url, {
+    mode: "no-cors",
+  });
+  const mapFatalities_data = await mapFatalities_response.json();
+
+  console.log("URL-->>>" + mapInjuries_url);
+
+  console.log("URL-->>>" + mapFatalities_url);
+
   data = {
     fatal: fatal_data,
     traffic: trafficFatal_data,
     injuredAvg: injuredAvg_data,
     fatalAvg: fatalAvg_data,
+    weeklydata: weeklyData_data,
+    mapInjuries: mapInjury_data,
+    mapFatalities: mapFatalities_data,
   };
 
+  console.log(data);
   response.json(data);
 });
 

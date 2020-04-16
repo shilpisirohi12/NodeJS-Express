@@ -128,7 +128,8 @@ div#filter {
 /* maps */
 
 #map,
-#mapForInjuries {
+#mapForInjuries,
+#mapForFatalities {
   width: 800px;
   height: 350px;
   z-index: 99;

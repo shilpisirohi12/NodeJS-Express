@@ -71,7 +71,7 @@ var CountyCordinates = [
 var mapboxAccessToken =
   "pk.eyJ1Ijoic2hpbHBpc2lyb2hpMTIiLCJhIjoiY2s1cGhicTZ0MGhyMTNucGM2eGs2aWozMSJ9.jcR_T1ff0mJvlqWUt8Ge0w";
 
-var mymap = L.map("mapForInjuries").setView([28, -82], 6);
+var injury_mp = L.map("mapForInjuries").setView([28, -82], 6);
 
 L.tileLayer(
   "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
@@ -84,9 +84,9 @@ L.tileLayer(
     zoomOffset: -1,
     accessToken: mapboxAccessToken,
   }
-).addTo(mymap);
+).addTo(injury_mp);
 
-mymap.attributionControl.addAttribution(
+injury_mp.attributionControl.addAttribution(
   'Data &copy; <a href="https://www.fdot.gov/">Florida Dept. Of Transportation</a>'
 );
 
@@ -98,7 +98,7 @@ for (var i = 0; i < CountyCordinates.length; i++) {
   //   CountyCordinates[i]["latitude"],
   //   CountyCordinates[i]["lng"],
   // ])
-  //   .addTo(mymap)
+  //   .addTo(injury_mp)
   //   .bindPopup(CountyCordinates[i]["county"]);
   var circle = L.circle(
     [CountyCordinates[i]["latitude"], CountyCordinates[i]["lng"]],
@@ -111,13 +111,13 @@ for (var i = 0; i < CountyCordinates.length; i++) {
     }
   )
     .bindPopup(String(CountyCordinates[i]["county"]))
-    .addTo(mymap);
+    .addTo(injury_mp);
 }
 
 // control that shows county info on hover
 var injury_info = L.control();
 
-injury_info.onAdd = function (mymap) {
+injury_info.onAdd = function (injury_mp) {
   this._div = L.DomUtil.create("div", "info_map");
   this.update();
   return this._div;
@@ -128,4 +128,4 @@ injury_info.update = function () {
     "<h4>Motorcycle Injuries By County<br/> (2011 - 2019)<br/></h4>";
 };
 
-injury_info.addTo(mymap);
+injury_info.addTo(injury_mp);
