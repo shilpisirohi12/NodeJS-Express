@@ -29,43 +29,22 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "./views"));
 
 app.use(express.static(path.join(__dirname, "./static")));
-
+api_url = "http://3.86.38.185:5000";
 // URL for graph 1
-fatalities_url = new URL(
-  "/api/v1/resources/getFatalities",
-  "http://127.0.0.1:5000"
-);
-trafficFatal_url = new URL(
-  "/api/v1/resources/getTrafficFatalities",
-  "http://127.0.0.1:5000"
-);
+fatalities_url = new URL("/api/v1/resources/getFatalities", api_url);
+trafficFatal_url = new URL("/api/v1/resources/getTrafficFatalities", api_url);
 
 // URL for graph 3 Seriously Injured Motorcyclists by Month (2016-2018 Average)
-InjuredAverage_url = new URL(
-  "/api/v1/resources/getInjuredOperators",
-  "http://127.0.0.1:5000"
-);
+InjuredAverage_url = new URL("/api/v1/resources/getInjuredOperators", api_url);
 
 // URL for graph# 4 fatal Motorcyclists by Month (2016-2018 Average)
-fatalAverage_url = new URL(
-  "/api/v1/resources/getFatlMCOperators",
-  "http://127.0.0.1:5000"
-);
+fatalAverage_url = new URL("/api/v1/resources/getFatlMCOperators", api_url);
 
-weeklyData_url = new URL(
-  "/api/v1/resources/getByDayOfWeek",
-  "http://127.0.0.1:5000"
-);
+weeklyData_url = new URL("/api/v1/resources/getByDayOfWeek", api_url);
 
-mapInjuries_url = new URL(
-  "/api/v1/resources/getmcInjuryByCounty",
-  "http://127.0.0.1:5000"
-);
+mapInjuries_url = new URL("/api/v1/resources/getmcInjuryByCounty", api_url);
 
-mapFatalities_url = new URL(
-  "/api/v1/resources/getmcFatalityByCounty",
-  "http://127.0.0.1:5000"
-);
+mapFatalities_url = new URL("/api/v1/resources/getmcFatalityByCounty", api_url);
 
 app.get("/", async (request, response) => {
   response.render("pages/index", {

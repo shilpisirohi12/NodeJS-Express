@@ -151,7 +151,7 @@ getData();
 async function getData() {
   const response = await fetch("/dashboard");
   const data = await response.json();
-  //console.log(data);
+  await sleep(2000);
   var selectCounty = document.getElementById("county");
   for (var cnt in countyName) {
     var optionCounty = document.createElement("option");
@@ -163,6 +163,11 @@ async function getData() {
   drawVisualization(data);
   map_fatalities(data["mapFatalities"]);
   map_injuries(data["mapInjuries"]);
+}
+
+//it won't load the page till it get all the API data
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function updateData(filter) {
@@ -292,7 +297,7 @@ google.load("visualization", "1", { packages: ["corechart"] });
 //google.setOnLoadCallback(drawVisualization);
 
 function drawVisualization(data) {
-  console.log(data);
+  //console.log(data);
   let months = [
     "Jan",
     "Feb",
@@ -552,17 +557,17 @@ function drawVisualization(data) {
   };
   // var exportGraphs = document.getElementById("graphs-content");
 
-  console.log(
-    data["fatal"].length +
-      "  " +
-      data["traffic"].length +
-      "  " +
-      data["injuredAvg"].length +
-      "  " +
-      data["fatalAvg"].length +
-      "  " +
-      data["weeklydata"].length
-  );
+  // console.log(
+  //   data["fatal"].length +
+  //     "  " +
+  //     data["traffic"].length +
+  //     "  " +
+  //     data["injuredAvg"].length +
+  //     "  " +
+  //     data["fatalAvg"].length +
+  //     "  " +
+  //     data["weeklydata"].length
+  // );
 
   if (data["fatal"].length > 0 && data["traffic"].length > 0) {
     var chartFatalities = new google.visualization.ComboChart(
@@ -704,8 +709,8 @@ var mapboxAccessToken =
   "pk.eyJ1Ijoic2hpbHBpc2lyb2hpMTIiLCJhIjoiY2s1cGhicTZ0MGhyMTNucGM2eGs2aWozMSJ9.jcR_T1ff0mJvlqWUt8Ge0w";
 // ***************Fatalities Map ***************
 function map_fatalities(data) {
-  console.log("*************inside map_fatalities********");
-  console.log(data);
+  //console.log("*************inside map_fatalities********");
+  //console.log(data);
   var mymap = L.map("mapForFatalities").setView([28, -82], 6);
 
   L.tileLayer(
@@ -796,7 +801,7 @@ function map_injuries(data) {
   for (var i in data) {
     injuries[data[i]["county_name"]] = data[i]["injured"];
   }
-  console.log(injuries);
+  //console.log(injuries);
   for (var i = 0; i < CountyCordinates.length; i++) {
     var circle = L.circle(
       [CountyCordinates[i]["latitude"], CountyCordinates[i]["lng"]],
