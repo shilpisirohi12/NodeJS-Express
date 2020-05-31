@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link rel="title icon" href="/images/CUTR-Circle.jpg">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="title icon" href="/image/CUTR-Circle.jpg">
     <link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
@@ -14,10 +14,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <!-- <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script> -->
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.bundle.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.5.3/jspdf.debug.js" integrity="sha384-NaWTHo/8YCBYJ59830LTz/P4aQZK1sS0SneOgAvhsIl3zBu8r9RevNg5lHCHAuQ/" crossorigin="anonymous"></script>
     <link href="https://fonts.googleapis.com/css?family=Playfair+Display&display=swap" rel="stylesheet"> 
     <link rel="stylesheet" href="/css/stylesheet.css">
+
     <title><%=title%></title>
   </head>
   <body onload="initialLoad()">
@@ -42,14 +44,12 @@
 
       </div>
     </header>
+    <div id="loader" class="loader"></div>
 
   <div id="body" class="container-fluid">
   <div class="row">
     <div id="filter" class="col-md-2 border p-1 bg-dark text-light" data-spy="affix">
-     
-          <h3 class="heading p-3 text-center ">FILTERS</h3>
-   
-
+        <h3 class="heading p-3 text-center ">FILTERS</h3>
         <ul class="filterForm">          
           <form  method="POST">
             <li>
@@ -85,19 +85,27 @@
     </div>
     
 
-    <div id="graph-section" class="col-md-10">
+    <div id="graph-section" class="col-md-10 pull-right">
       <div id="graph-header" class="row text-center my-2 p-3 bg-dark text-white">
         INTERACTIVE GRAPHS
       </div>
       <div id="content" class="row pl-3 pl-3 pt-2 pr-3">
-        <div id="Fatalities" class="col-sm-6 p-2 border"></div>
-        <div id="weekly" class="col-sm-6 p-2 border"></div> 
+        <div class="col-sm-6 p-2 border">
+        <canvas id="chartjs-1" ></canvas>
+      </div>
+      <div class="col-sm-6 p-2 border">
+        <canvas id="chartjs-2"></canvas>
+        </div>
+      </div>
+      <div id="content" class="row pl-3 pl-3 pt-2 pr-3">
+        <div class="col-sm-6 p-2 border">
+        <canvas id="chartjs-3" ></canvas>
+      </div>
+      <div class="col-sm-6 p-2 border">
+        <canvas id="chartjs-4"></canvas>
+        </div>
       </div>
 
-      <div id="content" class="row pl-3 pl-3 pt-2 pr-3">
-        <div id="injuredByMonth" class="col-sm-6 p-2 border"></div>
-        <div id="fatalByMonth" class="col-sm-6 p-2 border"></div>
-      </div>
       <div id="maps-header" class="row text-center my-2 p-3 bg-dark text-white">
         INTERACTIVE MAPS
       </div>
@@ -125,8 +133,8 @@
     import {initialLoad} from "./js/main.js"
     window.initialLoad=initialLoad
     </script> -->
-    <script src="./js/main.js"></script>
-    <script src="./js/cloroplethMaps.js"></script>
+    <script type="text/javascript" src="./js/main.js"></script>
+    <script type="text/javascript" src="./js/cloroplethMaps.js"></script>
     <!-- <script src="./js/fatalities_map.js"></script> -->
     <!-- <script src="./js/injury_map.js"></script> -->
     <!-- <script src="./js/pdfGenerator.js"></script> -->

@@ -29,7 +29,8 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "./views"));
 
 app.use(express.static(path.join(__dirname, "./static")));
-api_url = "http://3.86.38.185:5000";
+//api_url = "http://3.86.38.185:5000";
+api_url = "http://127.0.0.1:5000";
 // URL for graph 1
 fatalities_url = new URL("/api/v1/resources/getFatalities", api_url);
 trafficFatal_url = new URL("/api/v1/resources/getTrafficFatalities", api_url);
@@ -210,9 +211,13 @@ app.use((request, response, next) => {
   console.error();
 
   return next(createError(404, "File Not Found!!!!!"));
+  //return next();
 });
 
 app.use((err, request, response) => {
+  console.log("******************ERROR**************************");
+  console.log(err.status);
+  console.log("******************ERROR**************************");
   response.locals.message = err.message;
   const status = err.status || 500;
   response.locals.status = status;

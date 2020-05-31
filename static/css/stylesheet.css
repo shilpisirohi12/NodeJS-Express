@@ -1,14 +1,5 @@
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
-/* @media (max-width: 768px) {
-  #sidebar {
-    margin-left: -250px;
-  }
-  #sidebar.active {
-    margin-left: 0;
-  }
-} */
-
 #top {
   background-color: #c0c0c0;
   width: 100%;
@@ -18,6 +9,40 @@
   margin-bottom: 1rem;
   display: inline;
   text-align: left;
+}
+
+.loader {
+  position: fixed;
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid #3498db;
+  width: 120px;
+  height: 120px;
+  z-index: 200;
+  top: 50%;
+  left: 50%;
+  -webkit-animation: spin 2s linear infinite; /* Safari */
+  animation: spin 2s linear infinite;
+  display: none;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+  0% {
+    -webkit-transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* .menu-items {
@@ -30,6 +55,10 @@
   border-radius: 0.6rem;
 } */
 
+h3.heading.d-inline-block {
+  font-size: 1.2rem;
+}
+
 .menu-items a:link,
 .menu-items a:visited {
   background-color: white;
@@ -38,10 +67,10 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
-  font-size: 1.3em;
-  font-weight: 400;
+  font-size: 1em;
+  /* font-weight: 400; */
   border-radius: 0.9em;
-  margin: 0rem 0.3rem;
+  /* margin: 0rem 0.3rem; */
 }
 
 .menu-items a:hover,
@@ -49,9 +78,6 @@
   background-color: whitesmoke;
 }
 
-.first-item {
-  margin-left: 20%;
-}
 .contact {
   float: right;
   margin-top: 0.4rem;
@@ -88,9 +114,9 @@ label {
   height: 40px;
 }
 
-div#graph-section {
+/* div#graph-section {
   padding-top: 4.6rem;
-}
+} */
 body {
   font-family: "Poppins", sans-serif;
   background: #fafafa;
@@ -135,21 +161,16 @@ div#filter {
   z-index: 99;
 }
 .info {
-  padding: 6px 8px;
-  font: 14px/16px Arial, Helvetica, sans-serif;
+  padding: 2px 2px;
+  font: 8px/10px Arial, Helvetica, sans-serif;
   background: white;
   background: rgba(255, 255, 255, 0.8);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
 }
 
-.info h4 {
-  margin: 0 0 5px;
-  color: #777;
-}
-
 .info_map {
-  padding: 4px 6px;
+  padding: 2px 2px;
   font: 8px/10px Arial, Helvetica, sans-serif;
   background: white;
   background: rgba(255, 255, 255, 0.8);
@@ -160,7 +181,7 @@ div#filter {
 .info_map h4 {
   margin: 0 0 2px;
   color: #777;
-  font-size: 1rem;
+  font-size: 0.6rem;
 }
 
 .legend {
@@ -174,4 +195,127 @@ div#filter {
   float: left;
   margin-right: 8px;
   opacity: 0.7;
+}
+
+/* label.align-center {
+  padding-left: 40%;
+} */
+
+/*--------bootsrap padding fix------*/
+[class*="col-"] {
+  padding: 1rem;
+}
+
+/*-----Media Queries-----*/
+
+@media (min-width: 768px) {
+  h3.heading.d-inline-block {
+    font-size: 1.4rem;
+  }
+  .first-item {
+    margin-left: 1%;
+  }
+
+  .menu-items a:link,
+  .menu-items a:visited {
+    background-color: white;
+    color: black;
+    padding: 0.1em 0.6em;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 1.2em;
+    font-weight: 200;
+    border-radius: 0.9em;
+    /* margin: 0rem 0.3rem; */
+  }
+
+  .info {
+    padding: 2px 2px;
+    font: 14px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+
+  .info_map {
+    padding: 2px 2px;
+    font: 14rem Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+
+  .info_map h4 {
+    margin: 0 0 2px;
+    color: #777;
+    font-size: 13px;
+  }
+
+  .legend {
+    text-align: left;
+    line-height: 20px;
+    color: #555;
+  }
+  .legend i {
+    width: 20px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+    opacity: 0.7;
+  }
+  div#filter {
+    position: fixed;
+    right: 0;
+  }
+
+  div#graph-section {
+    padding-top: 4.6rem;
+  }
+}
+
+@media (min-width: 992px) {
+  h3.heading.d-inline-block {
+    font-size: 2rem;
+  }
+}
+
+@media (min-width: 1000px) {
+  h3.heading.d-inline-block {
+    font-size: 2.2rem;
+  }
+  .first-item {
+    margin-left: 3%;
+  }
+
+  .info_map {
+    padding: 4px 6px;
+    font: 8px/10px Arial, Helvetica, sans-serif;
+    background: white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+  }
+
+  .info_map h4 {
+    margin: 0 0 2px;
+    color: #777;
+    font-size: 1rem;
+  }
+
+  div#filter {
+    position: fixed;
+    right: 0;
+  }
+}
+
+@media (min-width: 1100px) {
+  h3.heading.d-inline-block {
+    font-size: 2.4rem;
+  }
+  .first-item {
+    margin-left: 20%;
+  }
 }

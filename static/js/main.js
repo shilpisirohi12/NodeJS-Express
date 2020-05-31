@@ -1,5 +1,6 @@
 var year = ["2011", "2012", "2013", "2014", "2015", "2016", "2017", "2018"];
 var year_Title = "2011-2018";
+var chart, chart2, chart3, chart4;
 var district = [
   "Bartow",
   "Lake City",
@@ -159,14 +160,20 @@ async function getData() {
     optionCounty.value = ++cnt;
     selectCounty.add(optionCounty);
   }
+  loadShow = document.getElementById("loader");
+  loadShow.style.display = "none";
   year_Title = "2011-2018";
-  drawVisualization(data);
+  //
+  chartJsGraphs(data);
+  //drawVisualization(data);
   map_fatalities(data["mapFatalities"]);
   map_injuries(data["mapInjuries"]);
 }
 
 //it won't load the page till it get all the API data
 function sleep(ms) {
+  loadShow = document.getElementById("loader");
+  loadShow.style.display = "block";
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
@@ -212,7 +219,8 @@ async function updateData(filter) {
       year_Title = yearValue;
     }
   }
-  drawVisualization(data);
+  //drawVisualization(data);
+  updateCharts(data);
   addFatalityMapMarker(data["mapFatalities"]);
   map_injuries(data["mapInjuries"]);
 }
@@ -291,13 +299,23 @@ function submitButton() {
 }
 
 //-------------------------------------------------------
-//------------------Creating google graphs---------------
+//------------------Creating ChartJS graphs---------------
 //-------------------------------------------------------
-google.load("visualization", "1", { packages: ["corechart"] });
-//google.setOnLoadCallback(drawVisualization);
-
-function drawVisualization(data) {
+function chartJsGraphs(data) {
+  if (window.chart != undefined) {
+    window.chart.destroy();
+  }
+  if (window.chart2 != undefined) {
+    window.chart2.destroy();
+  }
+  if (window.chart3 != undefined) {
+    window.chart3.destroy();
+  }
+  if (window.chart4 != undefined) {
+    window.chart4.destroy();
+  }
   //console.log(data);
+  let weekday = ["Mon", "Tue", "Wed", "Thu", "Fri"];
   let months = [
     "Jan",
     "Feb",
@@ -312,322 +330,636 @@ function drawVisualization(data) {
     "Nov",
     "Dec",
   ];
+  let yr = [],
+    fatalities = [],
+    traffic = [],
+    weekly_fatal = [],
+    weekly_injured = [],
+    week_idx = [],
+    inj_operator = [],
+    inj_passenger = [],
+    fatal_operator = [],
+    fatal_passenger = [],
+    graph3_month = [],
+    graph4_month = [];
 
-  let weekday = ["Mon", "Tue", "Wed", "Thu", "Fri"];
-
-  let graph1_fatalities = [["Year", "MC Fatalities", "Fatalities"]];
   for (i = 0; i < data["fatal"].length; i++) {
-    graph1_fatalities.push([
-      String(data["fatal"][i]["year"]),
-      data["fatal"][i]["fatalities"],
-      data["traffic"][i]["fatalities"],
-    ]);
+    yr.push(String(data["fatal"][i]["year"]));
+    fatalities.push(data["fatal"][i]["fatalities"]);
+    traffic.push(data["traffic"][i]["fatalities"]);
   }
+  title1 = "Motorcycle Fatalities in Florida (" + year_Title + ")";
 
-  // let graph2_proportions = [
-  //   [
-  //     "Weekday",
-  //     "Proportion of MC crashes in Traffic Crashes",
-  //     "Proportion of MC Fatalities in Traffic Fatalities",
-  //   ],
-  //   ["2011", 3.2, 18.8],
-  //   ["2012", 3.8, 18.8],
-  //   ["2013", 3.3, 19.2],
-  //   ["2014", 3.1, 18],
-  //   ["2015", 2.9, 19.9],
-  //   ["2016", 2.7, 17.2],
-  //   ["2017", 2.6, 17.7],
-  //   ["2018", 2.4, 17.1],
-  // ];
-
-  let graph2_weekly = [
-    ["WeekDay", "Motorcycle Fatalities", "Motorcycle Injuries"],
-  ];
   for (i = 0; i < data["weeklydata"].length; i++) {
-    let week_idx = data["weeklydata"][i]["week"] - 2;
-    // console.log("week_idx:" + week_idx + " ::" + weekday[week_idx]);
-    graph2_weekly.push([
-      weekday[week_idx],
-      data["weeklydata"][i]["fatal"],
-      data["weeklydata"][i]["injured"],
-    ]);
+    let temp = data["weeklydata"][i]["week"] - 2;
+    week_idx.push(weekday[temp]);
+    weekly_fatal.push(data["weeklydata"][i]["fatal"]);
+    weekly_injured.push(data["weeklydata"][i]["injured"]);
   }
-
-  //console.log("graph2_weekly------->>>>" + graph2_weekly);
-
-  let graph3_injuredByMonth = [
-    ["Month", "MC Operators Injured", "MC Passengers Injured"],
-  ];
 
   for (i = 0; i < data["injuredAvg"].length; i++) {
     let month_index = data["injuredAvg"][i]["month"] - 1;
-    //console.log("months" + months[month_index] + " " + month_index);
-    graph3_injuredByMonth.push([
-      months[month_index],
-      data["injuredAvg"][i]["fatal_mcOperator"],
-      data["injuredAvg"][i]["fatal_mcPassenger"],
-    ]);
+    graph3_month.push(months[month_index]);
+    inj_operator.push(data["injuredAvg"][i]["fatal_mcOperator"]);
+    inj_passenger.push(data["injuredAvg"][i]["fatal_mcPassenger"]);
   }
 
-  let graph4_fatalAvg = [
-    ["Month", "MC Operators Killed", "MC Passengers killed"],
-  ];
   for (i = 0; i < data["fatalAvg"].length; i++) {
     let month_index = data["fatalAvg"][i]["month"] - 1;
-    graph4_fatalAvg.push([
-      months[month_index],
-      data["fatalAvg"][i]["fatal_mcOperator"],
-      data["fatalAvg"][i]["fatal_mcPassenger"],
-    ]);
+    graph4_month.push(months[month_index]);
+    fatal_operator.push(data["fatalAvg"][i]["fatal_mcOperator"]);
+    fatal_passenger.push(data["fatalAvg"][i]["fatal_mcPassenger"]);
   }
-  var dataFatalities = google.visualization.arrayToDataTable(graph1_fatalities);
-  // var dataProportions = google.visualization.arrayToDataTable(
-  //   graph2_proportions
-  // );
-  var weeklyData = google.visualization.arrayToDataTable(graph2_weekly);
-  var injuredByMonth = google.visualization.arrayToDataTable(
-    graph3_injuredByMonth
-  );
-  var fatalByMonth = google.visualization.arrayToDataTable(graph4_fatalAvg);
 
-  var optionsFatalities = {
-    title: "Motorcycle Fatalities in Florida (" + year_Title + ")",
-    chartArea: { width: "70%" },
-    vAxes: {
-      0: {
-        title: "Motorcycle Fatalities",
-        minValue: 0,
-        titleTextStyle: { bold: 0, italic: 0 },
-      },
-      1: {
-        title: "Traffic Fatalities",
-        minValue: 0,
-        titleTextStyle: { bold: 0, italic: 0 },
-      },
-    },
-    hAxis: {
-      title: "",
-      titleTextStyle: { bold: 1, italic: 0 },
-      textStyle: { color: "#848484", bold: false, fontSize: 12 },
-      format: "",
-      // ticks: [
-      //   "2011",
-      //   "2012",
-      //   "2013",
-      //   "2014",
-      //   "2015",
-      //   "2016",
-      //   "2017",
-      //   "2018",
-      //   "2019",
-      // ],
-      slantedText: false,
-      slantedTextAngle: 90,
-    },
-    seriesType: "bars",
-    series: {
-      0: { targetAxisIndex: 0, type: "bars" },
-      1: {
-        targetAxisIndex: 1,
-        type: "line",
-        pointShape: "circle",
-        color: "blue",
-        pointSize: 8,
-        lineWidth: 2,
-      },
-      0: { color: "red" },
-    },
-    legend: { position: "bottom" },
-    backgroundColor: "#FFFFFF",
-  };
+  //console.log(graph4_month, fatal_operator, fatal_passenger);
 
-  // var optionsProportions = {
-  //   title:
-  //     "Proportion of Motorcycle (MC) Crashes and Fatalities in Florida (" +
-  //     year_Title +
-  //     ")",
-  //   chartArea: { width: "85%" },
-  //   vAxis: {
-  //     title: "Values in Percentage(%)",
-  //     titleTextStyle: { bold: 1, italic: 0 },
-  //   },
-  //   hAxis: {
-  //     title: "",
-  //     titleTextStyle: { bold: 1, italic: 0 },
-  //     format: "",
-  //     minValue: 2011,
-  //     maxValue: 2019,
-  //     ticks: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019],
-  //     textStyle: { color: "#848484", bold: false, fontSize: 12 },
-  //     slantedText: false,
-  //     slantedTextAngle: 90,
-  //   },
-  //   seriesType: "lines",
-  //   series: {
-  //     0: { pointShape: "circle", pointSize: 8, lineWidth: 2 },
-  //     1: { pointShape: "circle", pointSize: 8, lineWidth: 2 },
-  //   },
-  //   legend: { position: "bottom" },
-  //   backgroundColor: "#FFFFFF",
-  // };
-
-  var optionsWeekly = {
-    title:
-      "Motorcycle Fatalities and Injuries by Day Of Week (" + year_Title + ")",
-    chartArea: { width: "80%" },
-    vAxis: {
-      title: "Number of cases",
-      titleTextStyle: { bold: 0, italic: 0 },
-    },
-    hAxis: {
-      title: "",
-      titleTextStyle: { bold: 1, italic: 0 },
-      format: "",
-      textStyle: { color: "#848484", bold: false, fontSize: 12 },
-      slantedText: false,
-      slantedTextAngle: 90,
-    },
-    seriesType: "lines",
-    series: {
-      0: { pointShape: "circle", pointSize: 8, lineWidth: 2, color: "red" },
-      1: { pointShape: "circle", pointSize: 8, lineWidth: 2, color: "blue" },
-    },
-    legend: { position: "bottom" },
-    backgroundColor: "#FFFFFF",
-  };
-
-  var optionsinjuredByMonth = {
-    title: "Seriously Injured Motorcyclists by Month (" + year_Title + ")",
-    chartArea: { width: "90%" },
-    vAxis: { title: "", titleTextStyle: { bold: 1, italic: 0 } },
-    hAxis: {
-      title: "",
-      titleTextStyle: { bold: 1, italic: 0 },
-      textStyle: { color: "#848484", bold: false, fontSize: 12 },
-      ticks: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
+  var ctx = document.getElementById("chartjs-1").getContext("2d");
+  chart = new Chart(ctx, {
+    // The type of chart we want to create
+    type: "bar",
+    // The data for our dataset
+    data: {
+      labels: yr,
+      datasets: [
+        {
+          label: "MC Fatalities",
+          backgroundColor: "red",
+          borderColor: "red",
+          data: fatalities,
+          yAxisID: "y-0",
+          order: 2,
+        },
+        {
+          label: "Traffic Fatalities",
+          backgroundColor: "transparent",
+          borderColor: "blue",
+          data: traffic,
+          type: "line",
+          yAxisID: "y-1",
+          fill: false,
+          pointBorderColor: "blue",
+          pointBackgroundColor: "blue",
+          pointRadius: 6,
+          pointHoverRadius: 10,
+          pointHitRadius: 30,
+          pointBorderWidth: 2,
+          pointStyle: "circle",
+          order: 1,
+        },
       ],
     },
-    seriesType: "bars",
-    isStacked: true,
-    legend: { position: "bottom" },
-    backgroundColor: "#ffffff",
-  };
 
-  var optionsfatalByMonth = {
-    chartArea: { width: "85%" },
-    title: "Motorcycle(MC) Fatalities by Month (" + year_Title + ")",
-    vAxis: { title: "", titleTextStyle: { bold: 1, italic: 0 } },
-    hAxis: {
-      title: "",
-      titleTextStyle: { bold: 1, italic: 0 },
-      ticks: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-      ],
-      textStyle: { color: "#848484", bold: false, fontSize: 12 },
-      slantedText: false,
-      slantedTextAngle: 90,
+    // Configuration options go here
+    options: {
+      scales: {
+        yAxes: [
+          {
+            id: "y-0",
+            ticks: {
+              beginAtZero: true,
+              min: 0,
+            },
+            scaleLabel: {
+              display: true,
+              labelString: "Motorcycle Fatalities",
+            },
+          },
+          {
+            id: "y-1",
+            position: "right",
+            ticks: {
+              beginAtZero: true,
+              min: 0,
+            },
+            scaleLabel: {
+              display: true,
+              labelString: "Traffic Fatalities",
+            },
+          },
+        ],
+      },
+      legend: {
+        position: "bottom",
+      },
+      title: {
+        display: true,
+        text: "Motorcycle Fatalities in Florida (" + year_Title + ")",
+      },
     },
-    seriesType: "bars",
-    isStacked: true,
-    legend: { position: "bottom" },
-    backgroundColor: "#FFFFFF",
-  };
-  // var exportGraphs = document.getElementById("graphs-content");
+  });
 
-  // console.log(
-  //   data["fatal"].length +
-  //     "  " +
-  //     data["traffic"].length +
-  //     "  " +
-  //     data["injuredAvg"].length +
-  //     "  " +
-  //     data["fatalAvg"].length +
-  //     "  " +
-  //     data["weeklydata"].length
-  // );
+  var ctx2 = document.getElementById("chartjs-2").getContext("2d");
+  chart2 = new Chart(ctx2, {
+    // The type of chart we want to create
+    type: "line",
+    // The data for our dataset
+    data: {
+      labels: week_idx,
+      datasets: [
+        {
+          label: "Motorcycle Fatalities",
+          backgroundColor: "transparent",
+          borderColor: "red",
+          fill: false,
+          data: weekly_fatal,
+          pointBorderColor: "red",
+          pointBackgroundColor: "red",
+          pointRadius: 6,
+          pointHoverRadius: 10,
+          pointHitRadius: 30,
+          pointBorderWidth: 2,
+          pointStyle: "circle",
+        },
+        {
+          label: "Motorcycle Injuries",
+          backgroundColor: "transparent",
+          borderColor: "blue",
+          data: weekly_injured,
+          fill: false,
+          pointBorderColor: "blue",
+          pointBackgroundColor: "blue",
+          pointRadius: 6,
+          pointHoverRadius: 10,
+          pointHitRadius: 30,
+          pointBorderWidth: 2,
+          pointStyle: "circle",
+        },
+      ],
+    },
 
-  if (data["fatal"].length > 0 && data["traffic"].length > 0) {
-    var chartFatalities = new google.visualization.ComboChart(
-      document.getElementById("Fatalities")
-    );
+    // Configuration options go here
+    options: {
+      legend: {
+        position: "bottom",
+      },
+      title: {
+        display: true,
+        text: "Serious Injured Motorcyclists by Month (" + year_Title + ")",
+      },
+    },
+  });
 
-    // google.visualization.events.addListener(
-    //   chartFatalities,
-    //   "ready",
-    //   function () {
-    //     // fatalities_img = '<img src="' + chartFatalities.getImageURI() + '">';
-    //     // exportGraphs.append(fatalities_img);
-    //     exportGraphs.innerHTML =
-    //       '<img src="' + chartFatalities.getImageURI() + '">';
-    //   }
-    // );
-    chartFatalities.draw(dataFatalities, optionsFatalities);
-  } else {
-    let divID = document.getElementById("Fatalities");
-    divID.innerHTML =
-      "<b>Motorcycle Fatalities</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
-  }
-  // var chartProportions = new google.visualization.ComboChart(
-  //   document.getElementById("proportions")
-  // );
-  // chartProportions.draw(dataProportions, optionsProportions);
+  var ctx3 = document.getElementById("chartjs-3").getContext("2d");
+  chart3 = new Chart(ctx3, {
+    // The type of chart we want to create
+    type: "bar",
+    // The data for our dataset
+    data: {
+      labels: graph3_month,
+      datasets: [
+        {
+          label: "Motorcycle Passengers Injured",
+          backgroundColor: "red",
+          borderColor: "red",
+          fill: true,
+          data: inj_passenger,
+          order: 2,
+        },
+        {
+          label: "Motorcycle Operators Injured ",
+          backgroundColor: "blue",
+          borderColor: "blue",
+          data: inj_operator,
+          fill: true,
+          order: 1,
+        },
+      ],
+    },
 
-  if (data["weeklydata"].length > 0) {
-    var chartWeekly = new google.visualization.ComboChart(
-      document.getElementById("weekly")
-    );
-    chartWeekly.draw(weeklyData, optionsWeekly);
-  } else {
-    let divID = document.getElementById("weekly");
-    divID.innerHTML =
-      "<b>Motorcycle Fatalities and Injuries by Day Of Week</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
-  }
+    // Configuration options go here
+    options: {
+      scales: {
+        xAxes: [
+          {
+            stacked: true,
+          },
+        ],
+        yAxes: [
+          {
+            stacked: true,
+          },
+        ],
+      },
+      legend: {
+        position: "bottom",
+      },
+      title: {
+        display: true,
+        text:
+          "Motorcycle Fatalities and Injuries by Day Of Week (" +
+          year_Title +
+          ")",
+      },
+    },
+  });
 
-  if (data["injuredAvg"].length > 0) {
-    var chartInjuredByMonth = new google.visualization.ComboChart(
-      document.getElementById("injuredByMonth")
-    );
-    chartInjuredByMonth.draw(injuredByMonth, optionsinjuredByMonth);
-  } else {
-    let divID = document.getElementById("injuredByMonth");
-    divID.innerHTML =
-      "<b>Seriously Injured  Motorcyclists by Month</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
-  }
+  var ctx4 = document.getElementById("chartjs-4").getContext("2d");
+  chart4 = new Chart(ctx4, {
+    // The type of chart we want to create
+    type: "bar",
+    // The data for our dataset
+    data: {
+      labels: graph4_month,
+      datasets: [
+        {
+          label: "MC Passengers Killed",
+          backgroundColor: "red",
+          borderColor: "red",
+          fill: true,
+          data: fatal_passenger,
+          order: 2,
+        },
+        {
+          label: "MC Operators Killed",
+          backgroundColor: "blue",
+          borderColor: "blue",
+          data: fatal_operator,
+          fill: false,
+          order: 1,
+        },
+      ],
+    },
 
-  if (data["fatalAvg"].length > 0) {
-    var chartFatalByMonth = new google.visualization.ComboChart(
-      document.getElementById("fatalByMonth")
-    );
-    chartFatalByMonth.draw(fatalByMonth, optionsfatalByMonth);
-  } else {
-    let divID = document.getElementById("fatalByMonth");
-    divID.innerHTML =
-      "<b>Motorcyclists Fatalities by Month</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
-  }
+    // Configuration options go here
+    options: {
+      scales: {
+        xAxes: [
+          {
+            stacked: true,
+          },
+        ],
+        yAxes: [
+          {
+            stacked: true,
+          },
+        ],
+      },
+      legend: {
+        position: "bottom",
+      },
+      title: {
+        display: true,
+        text: "Motorcycle(MC) Fatalities by Month (" + year_Title + ")",
+      },
+    },
+  });
 }
+
+function updateCharts(data) {
+  if (window.chart != undefined) {
+    window.chart.destroy();
+  }
+  if (window.chart2 != undefined) {
+    window.chart2.destroy();
+  }
+  if (window.chart3 != undefined) {
+    window.chart3.destroy();
+  }
+  if (window.chart4 != undefined) {
+    window.chart4.destroy();
+  }
+
+  chartJsGraphs(data);
+}
+
+//-------------------------------------------------------
+//------------------Creating google graphs---------------
+//-------------------------------------------------------
+//google.charts.load("current", { packages: ["corechart"] });
+//google.setOnLoadCallback(drawVisualization);
+
+// function drawVisualization(data) {
+//   //console.log(data);
+//   let months = [
+//     "Jan",
+//     "Feb",
+//     "Mar",
+//     "Apr",
+//     "May",
+//     "Jun",
+//     "Jul",
+//     "Aug",
+//     "Sep",
+//     "Oct",
+//     "Nov",
+//     "Dec",
+//   ];
+
+//   let weekday = ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+//   let graph1_fatalities = [["Year", "MC Fatalities", "Fatalities"]];
+//   for (i = 0; i < data["fatal"].length; i++) {
+//     graph1_fatalities.push([
+//       String(data["fatal"][i]["year"]),
+//       data["fatal"][i]["fatalities"],
+//       data["traffic"][i]["fatalities"],
+//     ]);
+//   }
+
+//   // let graph2_proportions = [
+//   //   [
+//   //     "Weekday",
+//   //     "Proportion of MC crashes in Traffic Crashes",
+//   //     "Proportion of MC Fatalities in Traffic Fatalities",
+//   //   ],
+//   //   ["2011", 3.2, 18.8],
+//   //   ["2012", 3.8, 18.8],
+//   //   ["2013", 3.3, 19.2],
+//   //   ["2014", 3.1, 18],
+//   //   ["2015", 2.9, 19.9],
+//   //   ["2016", 2.7, 17.2],
+//   //   ["2017", 2.6, 17.7],
+//   //   ["2018", 2.4, 17.1],
+//   // ];
+
+//   let graph2_weekly = [
+//     ["WeekDay", "Motorcycle Fatalities", "Motorcycle Injuries"],
+//   ];
+//   for (i = 0; i < data["weeklydata"].length; i++) {
+//     let week_idx = data["weeklydata"][i]["week"] - 2;
+//     // console.log("week_idx:" + week_idx + " ::" + weekday[week_idx]);
+//     graph2_weekly.push([
+//       weekday[week_idx],
+//       data["weeklydata"][i]["fatal"],
+//       data["weeklydata"][i]["injured"],
+//     ]);
+//   }
+
+//   //console.log("graph2_weekly------->>>>" + graph2_weekly);
+
+//   let graph3_injuredByMonth = [
+//     ["Month", "MC Operators Injured", "MC Passengers Injured"],
+//   ];
+
+//   for (i = 0; i < data["injuredAvg"].length; i++) {
+//     let month_index = data["injuredAvg"][i]["month"] - 1;
+//     //console.log("months" + months[month_index] + " " + month_index);
+//     graph3_injuredByMonth.push([
+//       months[month_index],
+//       data["injuredAvg"][i]["fatal_mcOperator"],
+//       data["injuredAvg"][i]["fatal_mcPassenger"],
+//     ]);
+//   }
+
+//   let graph4_fatalAvg = [
+//     ["Month", "MC Operators Killed", "MC Passengers killed"],
+//   ];
+//   for (i = 0; i < data["fatalAvg"].length; i++) {
+//     let month_index = data["fatalAvg"][i]["month"] - 1;
+//     graph4_fatalAvg.push([
+//       months[month_index],
+//       data["fatalAvg"][i]["fatal_mcOperator"],
+//       data["fatalAvg"][i]["fatal_mcPassenger"],
+//     ]);
+//   }
+//   var dataFatalities = google.visualization.arrayToDataTable(graph1_fatalities);
+//   // var dataProportions = google.visualization.arrayToDataTable(
+//   //   graph2_proportions
+//   // );
+//   var weeklyData = google.visualization.arrayToDataTable(graph2_weekly);
+//   var injuredByMonth = google.visualization.arrayToDataTable(
+//     graph3_injuredByMonth
+//   );
+//   var fatalByMonth = google.visualization.arrayToDataTable(graph4_fatalAvg);
+
+//   var optionsFatalities = {
+//     title: "Motorcycle Fatalities in Florida (" + year_Title + ")",
+//     chartArea: { width: "70%" },
+//     vAxes: {
+//       0: {
+//         title: "Motorcycle Fatalities",
+//         minValue: 0,
+//         titleTextStyle: { bold: 0, italic: 0 },
+//       },
+//       1: {
+//         title: "Traffic Fatalities",
+//         minValue: 0,
+//         titleTextStyle: { bold: 0, italic: 0 },
+//       },
+//     },
+//     hAxis: {
+//       title: "",
+//       titleTextStyle: { bold: 1, italic: 0 },
+//       textStyle: { color: "#848484", bold: false, fontSize: 12 },
+//       format: "",
+//       // ticks: [
+//       //   "2011",
+//       //   "2012",
+//       //   "2013",
+//       //   "2014",
+//       //   "2015",
+//       //   "2016",
+//       //   "2017",
+//       //   "2018",
+//       //   "2019",
+//       // ],
+//       slantedText: false,
+//       slantedTextAngle: 90,
+//     },
+//     seriesType: "bars",
+//     series: {
+//       0: { targetAxisIndex: 0, type: "bars" },
+//       1: {
+//         targetAxisIndex: 1,
+//         type: "line",
+//         pointShape: "circle",
+//         color: "blue",
+//         pointSize: 8,
+//         lineWidth: 2,
+//       },
+//       0: { color: "red" },
+//     },
+//     legend: { position: "bottom" },
+//     backgroundColor: "#FFFFFF",
+//   };
+
+//   // var optionsProportions = {
+//   //   title:
+//   //     "Proportion of Motorcycle (MC) Crashes and Fatalities in Florida (" +
+//   //     year_Title +
+//   //     ")",
+//   //   chartArea: { width: "85%" },
+//   //   vAxis: {
+//   //     title: "Values in Percentage(%)",
+//   //     titleTextStyle: { bold: 1, italic: 0 },
+//   //   },
+//   //   hAxis: {
+//   //     title: "",
+//   //     titleTextStyle: { bold: 1, italic: 0 },
+//   //     format: "",
+//   //     minValue: 2011,
+//   //     maxValue: 2019,
+//   //     ticks: [2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019],
+//   //     textStyle: { color: "#848484", bold: false, fontSize: 12 },
+//   //     slantedText: false,
+//   //     slantedTextAngle: 90,
+//   //   },
+//   //   seriesType: "lines",
+//   //   series: {
+//   //     0: { pointShape: "circle", pointSize: 8, lineWidth: 2 },
+//   //     1: { pointShape: "circle", pointSize: 8, lineWidth: 2 },
+//   //   },
+//   //   legend: { position: "bottom" },
+//   //   backgroundColor: "#FFFFFF",
+//   // };
+
+//   var optionsWeekly = {
+//     title:
+//       "Motorcycle Fatalities and Injuries by Day Of Week (" + year_Title + ")",
+//     chartArea: { width: "80%" },
+//     vAxis: {
+//       title: "Number of cases",
+//       titleTextStyle: { bold: 0, italic: 0 },
+//     },
+//     hAxis: {
+//       title: "",
+//       titleTextStyle: { bold: 1, italic: 0 },
+//       format: "",
+//       textStyle: { color: "#848484", bold: false, fontSize: 12 },
+//       slantedText: false,
+//       slantedTextAngle: 90,
+//     },
+//     seriesType: "lines",
+//     series: {
+//       0: { pointShape: "circle", pointSize: 8, lineWidth: 2, color: "red" },
+//       1: { pointShape: "circle", pointSize: 8, lineWidth: 2, color: "blue" },
+//     },
+//     legend: { position: "bottom" },
+//     backgroundColor: "#FFFFFF",
+//   };
+
+//   var optionsinjuredByMonth = {
+//     title: "Seriously Injured Motorcyclists by Month (" + year_Title + ")",
+//     chartArea: { width: "90%" },
+//     vAxis: { title: "", titleTextStyle: { bold: 1, italic: 0 } },
+//     hAxis: {
+//       title: "",
+//       titleTextStyle: { bold: 1, italic: 0 },
+//       textStyle: { color: "#848484", bold: false, fontSize: 12 },
+//       ticks: [
+//         "Jan",
+//         "Feb",
+//         "Mar",
+//         "Apr",
+//         "May",
+//         "Jun",
+//         "Jul",
+//         "Aug",
+//         "Sep",
+//         "Oct",
+//         "Nov",
+//         "Dec",
+//       ],
+//     },
+//     seriesType: "bars",
+//     isStacked: true,
+//     legend: { position: "bottom" },
+//     backgroundColor: "#ffffff",
+//   };
+
+//   var optionsfatalByMonth = {
+//     chartArea: { width: "85%" },
+//     title: "Motorcycle(MC) Fatalities by Month (" + year_Title + ")",
+//     vAxis: { title: "", titleTextStyle: { bold: 1, italic: 0 } },
+//     hAxis: {
+//       title: "",
+//       titleTextStyle: { bold: 1, italic: 0 },
+//       ticks: [
+//         "Jan",
+//         "Feb",
+//         "Mar",
+//         "Apr",
+//         "May",
+//         "Jun",
+//         "Jul",
+//         "Aug",
+//         "Sep",
+//         "Oct",
+//         "Nov",
+//         "Dec",
+//       ],
+//       textStyle: { color: "#848484", bold: false, fontSize: 12 },
+//       slantedText: false,
+//       slantedTextAngle: 90,
+//     },
+//     seriesType: "bars",
+//     isStacked: true,
+//     legend: { position: "bottom" },
+//     backgroundColor: "#FFFFFF",
+//   };
+//   // var exportGraphs = document.getElementById("graphs-content");
+
+//   // console.log(
+//   //   data["fatal"].length +
+//   //     "  " +
+//   //     data["traffic"].length +
+//   //     "  " +
+//   //     data["injuredAvg"].length +
+//   //     "  " +
+//   //     data["fatalAvg"].length +
+//   //     "  " +
+//   //     data["weeklydata"].length
+//   // );
+
+//   if (data["fatal"].length > 0 && data["traffic"].length > 0) {
+//     var chartFatalities = new google.visualization.ComboChart(
+//       document.getElementById("Fatalities")
+//     );
+
+//     // google.visualization.events.addListener(
+//     //   chartFatalities,
+//     //   "ready",
+//     //   function () {
+//     //     // fatalities_img = '<img src="' + chartFatalities.getImageURI() + '">';
+//     //     // exportGraphs.append(fatalities_img);
+//     //     exportGraphs.innerHTML =
+//     //       '<img src="' + chartFatalities.getImageURI() + '">';
+//     //   }
+//     // );
+//     chartFatalities.draw(dataFatalities, optionsFatalities);
+//   } else {
+//     let divID = document.getElementById("Fatalities");
+//     divID.innerHTML =
+//       "<b>Motorcycle Fatalities</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
+//   }
+//   // var chartProportions = new google.visualization.ComboChart(
+//   //   document.getElementById("proportions")
+//   // );
+//   // chartProportions.draw(dataProportions, optionsProportions);
+
+//   if (data["weeklydata"].length > 0) {
+//     var chartWeekly = new google.visualization.ComboChart(
+//       document.getElementById("weekly")
+//     );
+//     chartWeekly.draw(weeklyData, optionsWeekly);
+//   } else {
+//     let divID = document.getElementById("weekly");
+//     divID.innerHTML =
+//       "<b>Motorcycle Fatalities and Injuries by Day Of Week</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
+//   }
+
+//   if (data["injuredAvg"].length > 0) {
+//     var chartInjuredByMonth = new google.visualization.ComboChart(
+//       document.getElementById("injuredByMonth")
+//     );
+//     chartInjuredByMonth.draw(injuredByMonth, optionsinjuredByMonth);
+//   } else {
+//     let divID = document.getElementById("injuredByMonth");
+//     divID.innerHTML =
+//       "<b>Seriously Injured  Motorcyclists by Month</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
+//   }
+
+//   if (data["fatalAvg"].length > 0) {
+//     var chartFatalByMonth = new google.visualization.ComboChart(
+//       document.getElementById("fatalByMonth")
+//     );
+//     chartFatalByMonth.draw(fatalByMonth, optionsfatalByMonth);
+//   } else {
+//     let divID = document.getElementById("fatalByMonth");
+//     divID.innerHTML =
+//       "<b>Motorcyclists Fatalities by Month</b> graph: There is no data available for the selected filter. Please choose different filter values.<br><br><br><br><br><br><br><br><br>";
+//   }
+// }
 
 //****Code for Maps ****/
 //********************** */
