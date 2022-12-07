@@ -10,12 +10,12 @@
   "author": "shilpi sirohi",
   "license": "ISC",
   "dependencies": {
-    "body-parser": "^1.19.0",
+    "body-parser": "^1.20.1",
     "cookie-session": "^1.4.0",
     "ejs": "^3.0.2",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
-    "express": "^4.17.1",
+    "express": "^4.18.2",
     "express-validator": "^6.4.0",
     "http-errors": "^1.7.3",
     "node-fetch": "^2.6.0"
